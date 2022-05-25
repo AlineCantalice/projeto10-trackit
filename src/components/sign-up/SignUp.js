@@ -28,6 +28,8 @@ export default function SignUp() {
         const promise = axios.post(URL, formData);
         promise.then(response => {
             navigate("/");
+        }).catch(() => {
+            alert("Ocorreu um erro!! Tente novamente.");
         })
     }
 
