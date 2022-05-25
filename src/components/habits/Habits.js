@@ -1,5 +1,12 @@
-export default function Habits(){
+import Footer from "../../shared/footer/Footer";
+import Header from "../../shared/header/Header";
+
+export default function Habits() {
     return (
-        <h1>Eus sou habitos</h1>
+        <>
+            <Header />
+            <h1>Eus sou habitos</h1>
+            <Footer />
+        </>
     )
 }

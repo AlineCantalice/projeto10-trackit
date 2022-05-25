@@ -1,15 +1,48 @@
 import styled from "styled-components";
+
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { useState, useContext } from "react";
+
 import logo from "../../assets/images/logo.png"
+import UserContext from "../../contexts/UserContext";
 
 export default function Login() {
+    const {setUser} = useContext(UserContext);
+    const navigate = useNavigate();
+
+    const URL = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/auth/login";
+
+    const [formData, setFormData] = useState(
+        {
+            email: '',
+            password: ''
+        }
+    );
+
+    function handleInputChange(e) {
+        setFormData({ ...formData, [e.target.name]: e.target.value })
+      }
+
+    function login(event){
+        event.preventDefault();
+
+        const promise = axios.post(URL, formData);
+        promise.then(response => {
+            setUser(response.data);
+            navigate("/hoje")
+        });
+    }
+
     return (
         <Container>
             <Image src={logo} alt="logo" />
-            <Form>
-                <input type="email" placeholder="email" />
-                <input type="password" placeholder="senha" />
+            <Form onSubmit={login}>
+                <input type="email" value={formData.email} onChange={handleInputChange} name="email" placeholder="email" required/>
+                <input type="password" value={formData.password} onChange={handleInputChange} name="password" placeholder="senha" required/>
                 <button type="submit">Entrar</button>
             </Form>
+            <p onClick={() => navigate("/cadastro")}>Não tem uma conta? Cadastre-se!</p>
         </Container>
     )
 }
@@ -21,6 +54,13 @@ const Container = styled.section`
     flex-direction: column;
     justify-content: center;
     align-items: center;
+
+    p {
+        font-size: 13.976px;
+        margin-top: 25px;
+        text-decoration-line: underline;
+        color: #52B6FF;
+    }
 `
 
 const Image = styled.img`

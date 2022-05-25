@@ -1,5 +1,12 @@
+import Footer from "../../shared/footer/Footer";
+import Header from "../../shared/header/Header";
+
 export default function FollowUp(){
     return (
-        <h1>Eu sou o historico</h1>
+        <>
+            <Header />
+            <h1>Eu sou historico</h1>
+            <Footer />
+        </>
     )
 }
