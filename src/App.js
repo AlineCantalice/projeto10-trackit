@@ -1,3 +1,5 @@
+import GlobalStyle from "./theme/GlobalStyle";
+
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { useState } from "react";
 import styled from "styled-components";
@@ -15,6 +17,7 @@ export default function App() {
 
     return (
         <Main>
+            <GlobalStyle />
             <UserContext.Provider value={{user, setUser}}>
             <BrowserRouter>
                 <Routes>
