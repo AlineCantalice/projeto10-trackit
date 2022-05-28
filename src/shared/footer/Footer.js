@@ -3,17 +3,21 @@ import { TailSpin } from "react-loader-spinner";
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import PercentageContext from "../../contexts/PercentageContext";
 
 export default function Footer() {
 
     const navigate = useNavigate();
+    const {percentage} = useContext(PercentageContext);
 
     return (
         <Footers>
             <p onClick={() => navigate("/habitos")}>Hábitos</p>
-            <ProgressBar>
+            <ProgressBar onClick={() => navigate("/hoje")}>
                 <CircularProgressbar
                     text={`Hoje`}
+                    value={percentage}
                     styles={buildStyles({
                         // Rotation of path and trail, in number of turns (0-1)
                         rotation: 0.25,

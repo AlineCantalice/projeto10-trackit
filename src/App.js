@@ -10,24 +10,28 @@ import Habits from "./components/habits/Habits";
 import Today from "./components/today/Today";
 import FollowUp from "./components/follow-up/FollowUp";
 import UserContext from "./contexts/UserContext";
+import PercentageContext from "./contexts/PercentageContext";
 
 export default function App() {
-    
+
     const [user, setUser] = useState(null);
+    const [percentage, setPercentage] = useState(50);
 
     return (
         <Main>
             <GlobalStyle />
-            <UserContext.Provider value={{user, setUser}}>
-            <BrowserRouter>
-                <Routes>
-                    <Route path="/" element={<Login />} />
-                    <Route path="/cadastro" element={<SignUp />} />
-                    <Route path="/habitos" element={<Habits />} />
-                    <Route path="/hoje" element={<Today />} />
-                    <Route path="/historico" element={<FollowUp />} />
-                </Routes>
-            </BrowserRouter>
+            <UserContext.Provider value={{ user, setUser }}>
+                <PercentageContext.Provider value={{ percentage, setPercentage }}>
+                    <BrowserRouter>
+                        <Routes>
+                            <Route path="/" element={<Login />} />
+                            <Route path="/cadastro" element={<SignUp />} />
+                            <Route path="/habitos" element={<Habits />} />
+                            <Route path="/hoje" element={<Today />} />
+                            <Route path="/historico" element={<FollowUp />} />
+                        </Routes>
+                    </BrowserRouter>
+                </PercentageContext.Provider>
             </UserContext.Provider>
         </Main>
     )

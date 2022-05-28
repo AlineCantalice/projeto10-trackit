@@ -1,5 +1,7 @@
-import { useState, useContext } from "react";
+import axios from "axios";
+import { useState, useContext, useEffect } from "react";
 import styled from "styled-components";
+import PercentageContext from "../../contexts/PercentageContext";
 import UserContext from "../../contexts/UserContext";
 
 import Footer from "../../shared/footer/Footer";
@@ -7,8 +9,13 @@ import Header from "../../shared/header/Header";
 
 export default function Habits() {
 
+    const URL_POST = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits";
+    const URL_GET = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits";
+    const URL_DELETE = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/";
     const [habit, setHabit] = useState({ name: "", days: [] });
-    const {user} = useContext(UserContext);
+    const [habitList, setHabitList] = useState([]);
+    const { user } = useContext(UserContext);
+    const [add, setAdd] = useState(false);
     const week = [
         { id: 0, name: "D" },
         { id: 1, name: "S" },
@@ -18,6 +25,25 @@ export default function Habits() {
         { id: 5, name: "S" },
         { id: 6, name: "S" },
     ];
+    const config = {
+        headers: {
+            Authorization: `Bearer ${user.token}`
+        }
+    };
+
+    function listHabits() {
+        const promise = axios.get(URL_GET, config);
+        promise.then(response => {
+            setHabitList(response.data);
+        })
+    }
+
+    useEffect(() => {
+        const promise = axios.get(URL_GET, config);
+        promise.then(response => {
+            setHabitList(response.data);
+        })
+    }, []);
 
     const daysOrdered = habit.days.sort((a, b) => {
         if (a > b) return 1
@@ -26,10 +52,34 @@ export default function Habits() {
     })
 
     function newHabit(event) {
-        console.log(habit)
-        console.log(week)
-        console.log(habit.days.includes(2))
         event.preventDefault();
+
+        if (habit.days.length === 0) {
+            alert("Escolha pelo menos um dia!")
+        } else if (habit.name === "") {
+            alert("Escreva o nome do hábito!")
+        } else {
+            const promise = axios.post(URL_POST, habit, config);
+            promise.then(() => {
+                setHabit({ name: "", days: [] });
+                setAdd(false);
+                listHabits();
+            }).catch(() => {
+                alert("Tente novamente!")
+            })
+        }
+    }
+
+    function deleteHabit(element, index) {
+        const answer = window.confirm("Tem certeza que quer deletar esse hábito?");
+        if (answer) {
+            if (element.id === index) {
+                const promise = axios.delete(`${URL_DELETE}${index}`, config);
+                promise.then(() => {
+                    listHabits();
+                });
+            }
+        }
     }
 
     function handleInputChange(e) {
@@ -50,6 +100,7 @@ export default function Habits() {
                 setHabit({ ...habit, days: [...habit.days, id] })
             }
         }
+
     }
 
 
@@ -59,23 +110,43 @@ export default function Habits() {
             <Container>
                 <Top>
                     <p>Meus hábitos</p>
-                    <button>+</button>
+                    <button onClick={() => setAdd(true)}>+</button>
                 </Top>
-                <Form onSubmit={newHabit}>
-                    <input type="text" name="name" value={habit.name} onChange={handleInputChange} placeholder="nome do hábito" />
-                    <Days>
-                        {week.map((value, index) => (
-                            <DaysList selected={habit.days.includes(index) ? true : false} onClick={() => changeState(index, value)}>{value.name}</DaysList>
+                {!add ? '' : (
+                    <Form onSubmit={newHabit}>
+                        <input type="text" name="name" value={habit.name} onChange={handleInputChange} placeholder="nome do hábito" required />
+                        <Days>
+                            {week.map((value, index) => (
+                                <DaysList selected={habit.days.includes(index) ? true : false} onClick={() => changeState(index, value)}>{value.name}</DaysList>
+                            ))}
+                        </Days>
+                        <Buttons>
+                            <p onClick={() => setAdd(false)}>Cancelar</p>
+                            <button type="submit" >Salvar</button>
+                        </Buttons>
+                    </Form>
+                )}
+                {habitList ?
+                    <List>
+                        {habitList.map((value, index) => (
+                            <li>
+                                <Left>
+                                    <p>{value.name}</p>
+                                    <Days>
+                                        {week.map((day, index) => (
+                                            <DaysList selected={value.days.includes(index) ? true : false} >{day.name}</DaysList>
+                                        ))}
+                                    </Days>
+                                </Left>
+                                <h1 onClick={() => deleteHabit(value, value.id)}>trash</h1>
+                            </li>
                         ))}
-                    </Days>
-                    <Buttons>
-                        <p>Cancelar</p>
-                        <button type="submit" >Salvar</button>
-                    </Buttons>
-                </Form>
-                <Add>
-                    <p>Você não tem nenhum hábito cadastrado ainda. Adicione um hábito para começar a trackear!</p>
-                </Add>
+                    </List>
+                    :
+                    <Add>
+                        <p>Você não tem nenhum hábito cadastrado ainda. Adicione um hábito para começar a trackear!</p>
+                    </Add>
+                }
             </Container>
             <Footer />
         </>
@@ -91,6 +162,7 @@ const Container = styled.section`
     left: 0;
     padding: 28px 17px;
     background-color: #F2F2F2;
+    overflow-y: scroll;
 `
 const Top = styled.div`
     display: flex;
@@ -193,4 +265,31 @@ const Buttons = styled.article`
         color: #52B6FF;
         margin-right: 23px;
     }
+`
+
+const List = styled.ul`
+    margin-top: 20px;
+
+    li {
+        padding: 15px;
+        width: 100%;
+        height: 91px;
+        background: #FFFFFF;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+
+        p{
+            font-size: 19.976px;
+            color: #666666;
+            margin-bottom: 8px;
+        }
+
+    }
+`
+
+const Left = styled.div`
+    display: flex;
+    flex-direction: column;
 `
