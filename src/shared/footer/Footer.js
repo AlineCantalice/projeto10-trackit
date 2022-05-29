@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import { TailSpin } from "react-loader-spinner";
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import { useNavigate } from "react-router-dom";

@@ -3,12 +3,14 @@ import styled from "styled-components";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useState, useContext } from "react";
+import { ThreeDots } from "react-loader-spinner";
 
 import logo from "../../assets/images/logo.png"
 import UserContext from "../../contexts/UserContext";
 
 export default function Login() {
     const {setUser} = useContext(UserContext);
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     const URL = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/auth/login";
@@ -25,6 +27,7 @@ export default function Login() {
       }
 
     function login(event){
+        setLoading(true);
         event.preventDefault();
 
         const promise = axios.post(URL, formData);
@@ -38,9 +41,9 @@ export default function Login() {
         <Container>
             <Image src={logo} alt="logo" />
             <Form onSubmit={login}>
-                <input type="email" value={formData.email} onChange={handleInputChange} name="email" placeholder="email" required/>
-                <input type="password" value={formData.password} onChange={handleInputChange} name="password" placeholder="senha" required/>
-                <button type="submit">Entrar</button>
+                <input disabled={loading} type="email" value={formData.email} onChange={handleInputChange} name="email" placeholder="email" required/>
+                <input disabled={loading} type="password" value={formData.password} onChange={handleInputChange} name="password" placeholder="senha" required/>
+                <Button disabled={loading} type="submit">{loading ? <ThreeDots color="#FFFFFF"/> : 'Entrar'}</Button>
             </Form>
             <p onClick={() => navigate("/cadastro")}>Não tem uma conta? Cadastre-se!</p>
         </Container>
@@ -99,6 +102,26 @@ const Form = styled.form`
         font-weight: 400;
         font-size: 21px;
         text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         color: #FFFFFF;
     }
+`
+
+const Button = styled.button`
+    width: 100%;
+    height: 45px;
+    background: #52B6FF;
+    border: none;
+    border-radius: 4.64px;
+    font-family: 'Lexend Deca';
+    font-weight: 400;
+    font-size: 21px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #FFFFFF;
+    opacity: ${props => props.disabled ? 0.7 : 1};
 `
