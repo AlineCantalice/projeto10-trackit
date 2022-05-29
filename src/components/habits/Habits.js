@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useState, useContext, useEffect } from "react";
 import styled from "styled-components";
-import PercentageContext from "../../contexts/PercentageContext";
+import AllHabitsContext from "../../contexts/AllHabitsContext";
 import UserContext from "../../contexts/UserContext";
 
 import Footer from "../../shared/footer/Footer";
@@ -15,6 +15,7 @@ export default function Habits() {
     const [habit, setHabit] = useState({ name: "", days: [] });
     const [habitList, setHabitList] = useState([]);
     const { user } = useContext(UserContext);
+    const { setAllHabits } = useContext(AllHabitsContext);
     const [add, setAdd] = useState(false);
     const week = [
         { id: 0, name: "D" },
@@ -35,14 +36,24 @@ export default function Habits() {
         const promise = axios.get(URL_GET, config);
         promise.then(response => {
             setHabitList(response.data);
-        })
+            const arr = [];
+            for (let i = 0; i < response.data.length; i++) {
+                arr.push(response.data[i].id);
+            }
+            setAllHabits(arr);
+        });
     }
 
     useEffect(() => {
         const promise = axios.get(URL_GET, config);
         promise.then(response => {
             setHabitList(response.data);
-        })
+            const arr = [];
+            for (let i = 0; i < response.data.length; i++) {
+                arr.push(response.data[i].id);
+            }
+            setAllHabits(arr);
+        });
     }, []);
 
     const daysOrdered = habit.days.sort((a, b) => {
@@ -138,7 +149,7 @@ export default function Habits() {
                                         ))}
                                     </Days>
                                 </Left>
-                                <h1 onClick={() => deleteHabit(value, value.id)}>trash</h1>
+                                <ion-icon onClick={() => deleteHabit(value, value.id)} name="trash-outline"></ion-icon>
                             </li>
                         ))}
                     </List>
@@ -281,9 +292,13 @@ const List = styled.ul`
         justify-content: space-between;
 
         p{
-            font-size: 19.976px;
+            font-size: 19.98px;
             color: #666666;
             margin-bottom: 8px;
+        }
+
+        ion-icon {
+            font-size: 15px;
         }
 
     }
