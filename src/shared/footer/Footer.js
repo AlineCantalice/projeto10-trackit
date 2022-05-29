@@ -9,31 +9,22 @@ import PercentageContext from "../../contexts/PercentageContext";
 export default function Footer() {
 
     const navigate = useNavigate();
-    const {percentage} = useContext(PercentageContext);
+    const { percentage } = useContext(PercentageContext);
 
     return (
         <Footers>
             <p onClick={() => navigate("/habitos")}>Hábitos</p>
             <ProgressBar onClick={() => navigate("/hoje")}>
                 <CircularProgressbar
-                    text={`Hoje`}
-                    value={percentage}
+                    value={percentage*100}
+                    text={'Hoje'}
+                    background
+                    backgroundPadding={6}
                     styles={buildStyles({
-                        // Rotation of path and trail, in number of turns (0-1)
-                        rotation: 0.25,
-                        // Whether to use rounded or flat corners on the ends - can use 'butt' or 'round'
-                        strokeLinecap: 'round',
-                        // Text size
-                        textSize: '17.98px',
-                        // How long animation takes to go from one percentage to another, in seconds
-                        pathTransitionDuration: 0.5,
-                        // Can specify path transition in more detail, or remove it entirely
-                        // pathTransition: 'none',
-                        // Colors
-                        pathColor: `#52B6FF`,
-                        textColor: '#FFFFFF',
-                        trailColor: '#52B6FF',
-                        backgroundColor: '#52B6FF',
+                      backgroundColor: "#52B6FF",
+                      textColor: "#FFFFFF",
+                      pathColor: "#FFFFFF",
+                      trailColor: "transparent"
                     })}
                 />
             </ProgressBar>

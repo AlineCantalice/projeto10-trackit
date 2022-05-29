@@ -8,17 +8,14 @@ import UserContext from "../../contexts/UserContext"
 import Footer from "../../shared/footer/Footer"
 import Header from "../../shared/header/Header"
 import FinishedContext from "../../contexts/FinishedContext"
-import AllHabitsContext from "../../contexts/AllHabitsContext"
 import PercentageContext from "../../contexts/PercentageContext"
 
 export default function Today() {
 
     const URL_GET = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/today";
-    const URL_GET_All_HABITS = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits";
     const [today, setToday] = useState([]);
     const { user } = useContext(UserContext);
     const { finished, setFinished } = useContext(FinishedContext);
-    const { allHabits, setAllHabits } = useContext(AllHabitsContext);
     const { percentage, setPercentage } = useContext(PercentageContext);
     const config = {
         headers: {
@@ -32,7 +29,7 @@ export default function Today() {
     ]
 
     useEffect(() => {
-        let promise = axios.get(URL_GET, config);
+        const promise = axios.get(URL_GET, config);
         promise.then(response => {
             setToday(response.data);
             const arr = [];
@@ -42,16 +39,10 @@ export default function Today() {
                 }
             }
             setFinished(arr);
-        });
-        promise = axios.get(URL_GET_All_HABITS, config);
-        promise.then(response => {
-            const arr = [];
-            for (let i = 0; i < response.data.length; i++) {
-                arr.push(response.data[i].id);
+            if (arr.length !== 0) {
+                updatePercentage(arr.length, today.length);
             }
-            setAllHabits(arr);
         });
-        setPercentage(finished.length / allHabits.length);
     }, []);
 
     function listToday() {
@@ -65,7 +56,7 @@ export default function Today() {
                 }
             }
             setFinished(arr);
-            setPercentage(finished.length / allHabits.length);
+            updatePercentage(arr.length, today.length);
         });
     }
 
@@ -83,8 +74,8 @@ export default function Today() {
                         setFinished([...finished, element.id]);
                     }
                     listToday();
+                    updatePercentage(finished.length, today.length);
                 })
-                setPercentage(finished.length / allHabits.length);
             }
         }
     }
@@ -102,9 +93,13 @@ export default function Today() {
                 }
                 setFinished(arr);
                 listToday();
+                updatePercentage(arr.length, today.length);
             });
-            setPercentage(finished.length / allHabits.length);
         }
+    }
+
+    function updatePercentage(done, all) {
+        setPercentage(done / all);
     }
 
     return (
@@ -114,8 +109,7 @@ export default function Today() {
                 <Top>
                     <p>{weekdays[dayjs().day(today.id)]}, {now.format('DD/MM')}</p>
                 </Top>
-                {percentage === 0 | percentage === NaN ? <Text>Nenhum hábito concluído ainda</Text> : <Text color={true}>{Math.floor(percentage*100)}% dos hábitos concluídos</Text> }
-                
+                {!finished ? '' : percentage === 0 ? <Text>Nenhum hábito concluído ainda</Text> : <Text color={true}>{Math.floor(percentage * 100)}% dos hábitos concluídos</Text>}
                 {!today ? 'Carregando...' :
                     <List>
                         {today.map((value, index) => (
