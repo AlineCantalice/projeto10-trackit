@@ -109,7 +109,7 @@ export default function Today() {
                 <Top>
                     <p>{weekdays[dayjs().day(today.id)]}, {now.format('DD/MM')}</p>
                 </Top>
-                {!finished ? '' : percentage === 0 ? <Text>Nenhum hábito concluído ainda</Text> : <Text color={true}>{Math.floor(percentage * 100)}% dos hábitos concluídos</Text>}
+                {!finished ? '' : percentage === 0 ? <Text>Nenhum hábito concluído ainda</Text> : <Text habitDone={true}>{Math.floor(percentage * 100)}% dos hábitos concluídos</Text>}
                 {!today ? 'Carregando...' :
                     <List>
                         {today.map((value, index) => (
@@ -156,7 +156,7 @@ const Top = styled.div`
 
 const Text = styled.h6`
     font-size: 17.98px;
-    color: ${props => props.color ? "#8FC549" : "#BABABA"};
+    color: ${props => props.habitDone ? "#8FC549" : "#BABABA"};
 `
 
 const List = styled.ul`

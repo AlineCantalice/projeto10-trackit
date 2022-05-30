@@ -70,7 +70,7 @@ export default function Habits() {
                     setAdd(false);
                 }
             }).catch(() => {
-                alert("Tente novamente!")
+                alert("Ocorreu um erro. Tente novamente!")
                 setLoading(false);
             })
         }
@@ -82,6 +82,7 @@ export default function Habits() {
             if (element.id === index) {
                 const promise = axios.delete(`${URL_DELETE}${index}`, config);
                 promise.then(() => {
+                    alert("Hábito deletado com sucesso!");
                     listHabits();
                 });
             }
