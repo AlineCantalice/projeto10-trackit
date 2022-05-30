@@ -3,11 +3,13 @@ import styled from "styled-components";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { ThreeDots } from "react-loader-spinner";
 
 export default function SignUp() {
 
     const URL = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/auth/sign-up";
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
 
     const [formData, setFormData] = useState(
         {
@@ -24,12 +26,19 @@ export default function SignUp() {
 
     function signUp(event){
         event.preventDefault();
-
+        setLoading(true);
         const promise = axios.post(URL, formData);
-        promise.then(response => {
+        promise.then(() => {
             navigate("/");
         }).catch(() => {
-            alert("Ocorreu um erro!! Tente novamente.");
+            alert("E-mail já cadastrado!! Tente novamente.");
+            setFormData({
+                email: '',
+                password: '',
+                name: '',
+                image: ''
+            });
+            setLoading(false);
         })
     }
 
@@ -37,13 +46,13 @@ export default function SignUp() {
         <Container>
             <Image src={logo} alt="logo" />
             <Form onSubmit={signUp}>
-                <input type="email" name="email" value={formData.email} onChange={handleInputChange} placeholder="email" required />
-                <input type="password" name="password" value={formData.password} onChange={handleInputChange} placeholder="senha" required />
-                <input type="text" name="name" value={formData.name} onChange={handleInputChange} placeholder="nome" required />
-                <input type="text" name="image" value={formData.image} onChange={handleInputChange} placeholder="foto" required />
-                <button type="submit">Cadastrar</button>
+                <input disabled={loading} type="email" name="email" value={formData.email} onChange={handleInputChange} placeholder="email" required />
+                <input disabled={loading} type="password" name="password" value={formData.password} onChange={handleInputChange} placeholder="senha" required />
+                <input disabled={loading} type="text" name="name" value={formData.name} onChange={handleInputChange} placeholder="nome" required />
+                <input disabled={loading} type="text" name="image" value={formData.image} onChange={handleInputChange} placeholder="foto" required />
+                <Button disabled={loading} type="submit">{loading ? <ThreeDots color="#FFFFFF"/> : 'Cadastrar'}</Button>
             </Form>
-            <p onClick={() => navigate("/")}>Já tem uma conta? Faça login!</p>
+            <p disabled={loading} onClick={() => navigate("/")}>Já tem uma conta? Faça login!</p>
         </Container>
     )
 }
@@ -89,17 +98,21 @@ const Form = styled.form`
         padding-left: 11px;
         margin-bottom: 6px;
     }
+`
 
-    button {
-        width: 100%;
-        height: 45px;
-        background: #52B6FF;
-        border: none;
-        border-radius: 4.64px;
-        font-family: 'Lexend Deca';
-        font-weight: 400;
-        font-size: 21px;
-        text-align: center;
-        color: #FFFFFF;
-    }
+const Button = styled.button`
+    width: 100%;
+    height: 45px;
+    background: #52B6FF;
+    border: none;
+    border-radius: 4.64px;
+    font-family: 'Lexend Deca';
+    font-weight: 400;
+    font-size: 21px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #FFFFFF;
+    opacity: ${props => props.disabled ? 0.7 : 1}; 
 `

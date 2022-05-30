@@ -7,7 +7,6 @@ import { CheckBox } from '@styled-icons/material'
 import UserContext from "../../contexts/UserContext"
 import Footer from "../../shared/footer/Footer"
 import Header from "../../shared/header/Header"
-import FinishedContext from "../../contexts/FinishedContext"
 import PercentageContext from "../../contexts/PercentageContext"
 
 export default function Today() {
@@ -15,7 +14,7 @@ export default function Today() {
     const URL_GET = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/today";
     const [today, setToday] = useState([]);
     const { user } = useContext(UserContext);
-    const { finished, setFinished } = useContext(FinishedContext);
+    const [finished, setFinished] = useState([]);
     const { percentage, setPercentage } = useContext(PercentageContext);
     const config = {
         headers: {
@@ -39,6 +38,7 @@ export default function Today() {
                 }
             }
             setFinished(arr);
+            let today = response.data;
             if (arr.length !== 0) {
                 updatePercentage(arr.length, today.length);
             }

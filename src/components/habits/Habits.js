@@ -1,8 +1,8 @@
 import axios from "axios";
 import { useState, useContext, useEffect } from "react";
 import styled from "styled-components";
-import AllHabitsContext from "../../contexts/AllHabitsContext";
 import UserContext from "../../contexts/UserContext";
+import { ThreeDots } from "react-loader-spinner";
 
 import Footer from "../../shared/footer/Footer";
 import Header from "../../shared/header/Header";
@@ -15,8 +15,8 @@ export default function Habits() {
     const [habit, setHabit] = useState({ name: "", days: [] });
     const [habitList, setHabitList] = useState([]);
     const { user } = useContext(UserContext);
-    const { setAllHabits } = useContext(AllHabitsContext);
     const [add, setAdd] = useState(false);
+    const [loading, setLoading] = useState(false);
     const week = [
         { id: 0, name: "D" },
         { id: 1, name: "S" },
@@ -35,12 +35,8 @@ export default function Habits() {
     function listHabits() {
         const promise = axios.get(URL_GET, config);
         promise.then(response => {
+            setLoading(false);
             setHabitList(response.data);
-            const arr = [];
-            for (let i = 0; i < response.data.length; i++) {
-                arr.push(response.data[i].id);
-            }
-            setAllHabits(arr);
         });
     }
 
@@ -48,11 +44,6 @@ export default function Habits() {
         const promise = axios.get(URL_GET, config);
         promise.then(response => {
             setHabitList(response.data);
-            const arr = [];
-            for (let i = 0; i < response.data.length; i++) {
-                arr.push(response.data[i].id);
-            }
-            setAllHabits(arr);
         });
     }, []);
 
@@ -70,13 +61,17 @@ export default function Habits() {
         } else if (habit.name === "") {
             alert("Escreva o nome do hábito!")
         } else {
+            setLoading(true);
             const promise = axios.post(URL_POST, habit, config);
             promise.then(() => {
                 setHabit({ name: "", days: [] });
-                setAdd(false);
                 listHabits();
+                if(!loading){
+                    setAdd(false);
+                }
             }).catch(() => {
                 alert("Tente novamente!")
+                setLoading(false);
             })
         }
     }
@@ -125,19 +120,19 @@ export default function Habits() {
                 </Top>
                 {!add ? '' : (
                     <Form onSubmit={newHabit}>
-                        <input type="text" name="name" value={habit.name} onChange={handleInputChange} placeholder="nome do hábito" required />
-                        <Days>
+                        <input disabled={loading} type="text" name="name" value={habit.name} onChange={handleInputChange} placeholder="nome do hábito" required />
+                        <Days disabled={loading}>
                             {week.map((value, index) => (
                                 <DaysList selected={habit.days.includes(index) ? true : false} onClick={() => changeState(index, value)}>{value.name}</DaysList>
                             ))}
                         </Days>
                         <Buttons>
-                            <p onClick={() => setAdd(false)}>Cancelar</p>
-                            <button type="submit" >Salvar</button>
+                            <p disabled={loading} onClick={() => setAdd(false)}>Cancelar</p>
+                            <Button disabled={loading} type="submit" >{loading ? <ThreeDots color="#FFFFFF"/> : 'Salvar'}</Button>
                         </Buttons>
                     </Form>
                 )}
-                {habitList ?
+                {habitList.length !== 0 ?
                     <List>
                         {habitList.map((value, index) => (
                             <li>
@@ -261,21 +256,25 @@ const Buttons = styled.article`
     justify-content: space-between;
     align-items: center;
 
-    button {
-        width: 84px;
-        height: 35px;
-        border: none;
-        border-radius: 4.64px;
-        background-color: #52B6FF;
-        font-size: 15.98px;
-        color: #FFFFFF;
-    }
-
     p {
         font-size: 15.98px;
         color: #52B6FF;
         margin-right: 23px;
     }
+`
+
+const Button = styled.button`
+    width: 84px;
+    height: 35px;
+    border: none;
+    border-radius: 4.64px;
+    background-color: #52B6FF;
+    font-size: 15.98px;
+    color: #FFFFFF;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: ${props => props.disabled ? 0.7 : 1}; 
 `
 
 const List = styled.ul`

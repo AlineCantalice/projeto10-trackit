@@ -27,14 +27,20 @@ export default function Login() {
       }
 
     function login(event){
-        setLoading(true);
         event.preventDefault();
-
+        setLoading(true);
         const promise = axios.post(URL, formData);
         promise.then(response => {
             setUser(response.data);
             navigate("/hoje")
-        });
+        }).catch(() => {
+            alert("E-mail ou senha incorretos!! Tente novamente.");
+            setFormData({
+                email: '',
+                password: ''
+            });
+            setLoading(false);
+        })
     }
 
     return (
@@ -90,22 +96,6 @@ const Form = styled.form`
         color: #DBDBDB;
         padding-left: 11px;
         margin-bottom: 6px;
-    }
-
-    button {
-        width: 100%;
-        height: 45px;
-        background: #52B6FF;
-        border: none;
-        border-radius: 4.64px;
-        font-family: 'Lexend Deca';
-        font-weight: 400;
-        font-size: 21px;
-        text-align: center;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        color: #FFFFFF;
     }
 `
 
