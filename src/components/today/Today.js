@@ -102,6 +102,17 @@ export default function Today() {
         setPercentage(done / all);
     }
 
+    function validateColor(current, highest){
+        if(current === 0 || highest === 0){
+            return false;
+        }else {
+            if(highest > 0 && highest >= current){
+                return true;
+            }
+        }
+        return false;
+    }
+
     return (
         <>
             <Header image={user.image} />
@@ -116,8 +127,8 @@ export default function Today() {
                             <li onClick={() => habitDone(value, value.id)}>
                                 <div>
                                     <p>{value.name}</p>
-                                    <h6>Sequência atual: {value.currentSequence}</h6>
-                                    <h6>Seu recorde: {value.highestSequence}</h6>
+                                    <h4>Sequência atual: <H5 habitDone={value.done}> {value.currentSequence} dia(s)</H5></h4>
+                                    <h4>Seu recorde: <H6 highest={() => validateColor(value.currentSequence, value.highestSequence)}> {value.highestSequence} dia(s)</H6></h4>
                                 </div>
                                 <Check finished={value.done}></Check>
                             </li>
@@ -171,6 +182,7 @@ const List = styled.ul`
         margin-bottom: 10px;
         display: flex;
         justify-content: space-between;
+        color: '#666666';
 
         p{
             font-size: 19.98px;
@@ -178,11 +190,22 @@ const List = styled.ul`
             margin-bottom: 8px;
         }
 
-        h6{
+        h4{
             font-size: 12.98px;
-            color: #666666;
+            display: flex;
+            font-family: 'Lexend Deca';
         }
     }
+`
+
+const H5 = styled.h5`
+    font-size: 12.98px;
+    color: ${props => props.habitDone ? '#8FC549' : '#666666'};
+`
+
+const H6 = styled.h6`
+    font-size: 12.98px;
+    color: ${props => props.highest ? '#8FC549' : '#666666'};
 `
 
 const Check = styled(CheckBox)`
