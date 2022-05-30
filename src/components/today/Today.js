@@ -102,17 +102,6 @@ export default function Today() {
         setPercentage(done / all);
     }
 
-    function validateColor(current, highest){
-        if(current === 0 || highest === 0){
-            return false;
-        }else {
-            if(highest > 0 && highest >= current){
-                return true;
-            }
-        }
-        return false;
-    }
-
     return (
         <>
             <Header image={user.image} />
@@ -128,7 +117,7 @@ export default function Today() {
                                 <div>
                                     <p>{value.name}</p>
                                     <h4>Sequência atual: <H5 habitDone={value.done}> {value.currentSequence} dia(s)</H5></h4>
-                                    <h4>Seu recorde: <H6 highest={() => validateColor(value.currentSequence, value.highestSequence)}> {value.highestSequence} dia(s)</H6></h4>
+                                    <h4>Seu recorde: <H6 highest={value.currentSequence <= value.highestSequence && value.done}> {value.highestSequence} dia(s)</H6></h4>
                                 </div>
                                 <Check finished={value.done}></Check>
                             </li>
@@ -193,6 +182,7 @@ const List = styled.ul`
         h4{
             font-size: 12.98px;
             display: flex;
+            color: '#666666';
             font-family: 'Lexend Deca';
         }
     }
